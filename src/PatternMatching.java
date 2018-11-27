@@ -8,7 +8,7 @@ import java.util.Set;
  */
 public class PatternMatching {
     Map<String, Set<String>> cache = new HashMap<>();
-    public boolean isMatch(String text, String pattern) {
+    public boolean isMatchBrutalForce(String text, String pattern) {
         if (!cache.containsKey(text)) {
             cache.put(text, new HashSet<String>());
         }
@@ -25,7 +25,7 @@ public class PatternMatching {
                 if (text.charAt(i) == pattern.charAt(j) || pattern.charAt(j) == '?') continue;
                 else if (pattern.charAt(j) == '*') {
                     int k = 0;
-                    while ((i+k) <= text.length() && isMatch(text.substring(i+k), pattern.substring(j+1)) == false) {
+                    while ((i+k) <= text.length() && isMatchBrutalForce(text.substring(i+k), pattern.substring(j+1)) == false) {
                         k++;
                     }
                     return i+k <= text.length();
@@ -33,7 +33,7 @@ public class PatternMatching {
                     return false;
                 }
             } else if (j<pattern.length()) {
-                if (pattern.charAt(j) == '*') return isMatch("", pattern.substring(j+1));
+                if (pattern.charAt(j) == '*') return isMatchBrutalForce("", pattern.substring(j+1));
                 else return false;
             } else {
                 //last char is '*', the pattern could be empty
@@ -42,5 +42,26 @@ public class PatternMatching {
             }
         }
         return true;
+    }
+    public boolean isMatchingDp(String text, String pattern) {
+        boolean[][] dp = new boolean[text.length()+1][pattern.length()+1];
+
+        dp[0][0] = true;
+        //this is for text=""
+        for (int i=1; i<=pattern.length(); i++) {
+            if (pattern.charAt(i-1) == '*') dp[0][i] = dp[0][i-1];
+        }
+        for (int i=0; i<text.length(); i++) {
+            for (int j=0; j<pattern.length(); j++) {
+                if (pattern.charAt(j) == '?' || text.charAt(i) == pattern.charAt(j)) {
+                    dp[i+1][j+1] = dp[i][j];
+                } else if (pattern.charAt(j) == '*') {
+                    dp[i+1][j+1] = dp[i+1][j] || dp[i][j];
+                } else {
+                    dp[i+1][j+1] = false;
+                }
+            }
+        }
+        return dp[text.length()][pattern.length()];
     }
 }

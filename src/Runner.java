@@ -8,7 +8,11 @@ public class Runner {
         //aba a**a
         //aba a*a?
         //abaa ?*a?a?
-        boolean ret = pm.isMatch("ababcdssss", "?**a?*a");
+        String text = "";
+        String pattern = "**";
+        boolean ret = pm.isMatchBrutalForce(text, pattern);
         System.out.println("isMatching " + ret);
+        ret = pm.isMatchingDp(text, pattern);
+        System.out.println(ret);
     }
 }
