@@ -9,6 +9,7 @@ import java.util.*;
  */
 public class MiminumSpanningTree {
     int[] parent;
+    int[] rank;
     static public class Node implements Comparable<Node> {
         int source;
         int des;
@@ -29,9 +30,11 @@ public class MiminumSpanningTree {
         List<List<Node>> nodes = new ArrayList<>();
         List<Node> result = new ArrayList<>();
         parent = new int[V];
+        rank = new int[V];
         for (int i=0; i<V; i++){
             nodes.add(new ArrayList<Node>());
             parent[i] = i;
+            rank[i] = 1;
         }
         PriorityQueue<Node> queue = new PriorityQueue<>();
         for (int[] e : edges) {
@@ -55,14 +58,22 @@ public class MiminumSpanningTree {
     }
 
     private int find(int v) {
-        while (parent[v] != v) {
-            v = parent[v];
+        if (parent[v] != v){
+            int p = find(parent[v]);
+            parent[v] = p;
         }
-        return v;
+        return parent[v];
     }
 
     private void union(int src, int des) {
-        parent[find(src)] = find(des);
+        if (rank[src] < rank[des]) {
+            parent[find(src)] = find(des);
+        } else if (rank[src] > rank[des]) {
+            parent[find(des)] = find(src);
+        } else {
+            parent[find(src)] = find(des);
+            rank[des]++;
+        }
     }
 
 }
